@@ -45,6 +45,11 @@ function applyAppearance(){const dark=prefs.theme==='深色'||(prefs.theme==='�
 function originalIcon(name){const folder=prefs.style==='Windows 10'?(document.body.classList.contains('dark')?'SettingsNavIconsWin10Dark':'SettingsNavIconsWin10'):'SettingsNavIcons';return window.DAFEIYU_ORIGINAL_ICONS?.[folder]?.[name]||'';}
 function navIcon(group){const name={home:'home',basic:'general',features:'plugins',system:'components',updates:'updates',about:'about'}[group];return `<img class="nav-icon original-icon" data-icon="${name}" src="${originalIcon(name)}" alt="" aria-hidden="true">`;}
 function footerIcon(name){const glyph=name==='downloads'?'E896':'E713';return `<span class="nav-icon original-font-icon" data-font-glyph="${glyph}" data-font-icon="${name}" style="--font-icon:url('${window.DAFEIYU_FONT_ICONS?.[name]||''}')" aria-hidden="true"></span>`;}
+const GITHUB_RELEASE_URL='https://github.com/YunxiRamito/Dafeiyu-Go-DeepSeek-Harness-Setup/releases/latest';
+const GITEE_RELEASE_URL='https://gitee.com/Yunxiramito/Dafeiyu-Go-DeepSeek-Harness-Setup/releases';
+function isGiteeHost(hostname){return /(^|\.)gitee\.(com|io)$/i.test(String(hostname||'').split(':')[0].trim());}
+function downloadReleaseUrl(hostname){return isGiteeHost(hostname)?GITEE_RELEASE_URL:GITHUB_RELEASE_URL;}
+function applyDownloadTarget(){const link=$('#download-now');if(!link)return;const gitee=isGiteeHost(location.hostname);link.href=downloadReleaseUrl(location.hostname);link.dataset.mirror=gitee?'gitee':'github';link.title=(gitee?'打开 Gitee 安装器发行版':'打开 GitHub 安装器最新 Release')+' · 不会自动下载或运行安装包';}
 function contrastText(hex){const v=hex.replace('#','');const r=parseInt(v.slice(0,2),16),g=parseInt(v.slice(2,4),16),b=parseInt(v.slice(4,6),16);return (r*299+g*587+b*114)/1000>158?'#111':'#fff';}
 function currentWizard(){return state.specialPage||wizardPages[state.step];}
 function renderWizard(){const page=currentWizard(),w=state.wizard;const group=page==='welcome'?0:['source','scope','detect'].includes(page)?1:['dsh','components','versions','plugins','launcher'].includes(page)?2:page==='confirm'?3:page==='progress'?4:5;$('#wizard-steps').innerHTML=page==='welcome'?'': ['准备','环境','选项','确认','安装','完成'].map((v,i)=>`<div class="wizard-step ${i===group?'active':i<group?'done':''}"><span class="step-dot">${i<group?'✓':i+1}</span>${v}</div>`).join('');$('#wizard-steps').style.display=page==='welcome'?'none':'flex';$('#wizard-content').style.height=page==='welcome'?'calc(100% - 96px)':'';
@@ -197,5 +202,5 @@ $$('.window .titlebar').forEach(bar=>{let drag;bar.addEventListener('pointerdown
 window.addEventListener('resize',()=>{$$('.window').forEach(w=>{if(w.style.transform==='none'){w.style.left=Math.max(0,Math.min(innerWidth-w.offsetWidth,parseFloat(w.style.left)||0))+'px';w.style.top=Math.max(44,Math.min(innerHeight-102,parseFloat(w.style.top)||44))+'px';}});});
 function clock(){const now=new Date();$('#clock').innerHTML=now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})+'<br>'+now.toLocaleDateString('zh-CN');}clock();setInterval(clock,30000);matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyAppearance);
 $('#preview-theme').addEventListener('change',e=>{prefs.theme=e.target.value;savePrefs();applyAppearance();if(!$('#settings').classList.contains('hidden')&&state.page==='appearance')renderSettings();});
-applyAppearance();updateDesktopStatus();renderWizard();
+applyDownloadTarget();applyAppearance();updateDesktopStatus();renderWizard();
 </script></body></html>
